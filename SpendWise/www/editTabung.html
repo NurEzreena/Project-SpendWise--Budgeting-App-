@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Tabung</title>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css'>
+    <link rel="stylesheet" href="css/createTabung.css">
+
+    
+</head>
+<body>
+    <header>
+        <div style="display: flex; align-items: center;">
+            <img src="img/logo.png" alt="Logo Icon" style="width: 95px; height: auto; margin-right: 10px;">
+            <h1 style="margin: 0;"><strong>Spendwise</strong></h1>
+        </div>
+    </header>
+    <h1 style="text-align: center;"><strong>Edit Tabung</strong></h1>
+
+    <div class="container">
+        <form id="tabungForm" class="transaction-form" onsubmit="return false;">
+            <div class="form-group">
+                <label for="name">Tabung Name</label>
+                <input type="text" id="name" name="name" required class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="amount">Amount</label>
+                <input type="number" id="amount" name="amount" placeholder="RM" required class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label for="date">Date</label>
+                <input type="date" id="date" name="date" required class="form-control">
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-contact-bg">Save Changes</button>
+            </div>
+        </form>
+    </div>
+
+    <nav class="bottom-nav">
+        <div class="nav-item">
+            <a href="homepage.html" class="clickable-link">
+                <img src="img/homepage.png" alt="Profile Icon">
+                <span>Homepage</span>
+            </a>
+        </div>
+        
+        <div class="nav-item">
+            <a href="transaction.html" class="clickable-link">
+                <img src="img/plus.png" alt="Plus Icon">
+                <span>Transactions</span>
+            </a>
+        </div>
+        
+        <div class="nav-item">
+            <a href="tabung.html" class="clickable-link">
+                <img src="img/tabung.png" alt="Tabung Icon">
+                <span>Tabung</span>
+            </a>
+        </div>
+    </nav>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js"></script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyC9b_7RCy6HhfE3e7OdCHexwr09_AaDKvc",
+          authDomain: "project-spendwise.firebaseapp.com",
+          databaseURL: "https://project-spendwise-default-rtdb.asia-southeast1.firebasedatabase.app",
+          projectId: "project-spendwise",
+          storageBucket: "project-spendwise.appspot.com",
+          messagingSenderId: "329577030606",
+          appId: "1:329577030606:web:6fff678c0890a23f77419f",
+          measurementId: "G-YJ9XYKL5TG"
+        };
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Get the key from the URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const key = urlParams.get('key');
+
+        if (key) {
+            const tabungRef = ref(db, `tabung/${key}`);
+
+            // Populate the form with existing data
+            get(tabungRef).then((snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    document.getElementById('name').value = data.tabungName;
+                    document.getElementById('amount').value = data.amount;
+                    document.getElementById('date').value = data.date;
+                } else {
+                    alert('No data available for this tabung.');
+                }
+            }).catch((error) => {
+                console.error("Error fetching data: ", error);
+            });
+
+            // Handle form submission
+            document.getElementById('tabungForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                const updatedTabung = {
+                    tabungName: document.getElementById('name').value,
+                    amount: document.getElementById('amount').value,
+                    date: document.getElementById('date').value
+                };
+
+                update(tabungRef, updatedTabung)
+                    .then(() => {
+                        alert('Tabung updated successfully.');
+                        window.location.href = 'tabung.html'; // Redirect to the main page
+                    })
+                    .catch((error) => {
+                        console.error("Error updating tabung: ", error);
+                    });
+            });
+        } else {
+            alert('Invalid tabung key.');
+        }
+    </script>
+</body>
+</html>

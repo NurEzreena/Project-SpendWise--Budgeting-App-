@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tabung</title>
+    <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/css/bootstrap.min.css'>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="css/tabung.css">
+
+</head>
+<body>
+    <header>
+        <div style="display: flex; align-items: center;">
+            <img src="img/logo.png" alt="Logo Icon" style="width: 95px; height: auto; margin-right: 10px;">
+            <h1 style="margin: 0;"><strong>Spendwise</strong></h1>
+            
+        </div>
+    </header>
+ 
+    <div class="header-container">
+        <h1 style="align-items: center;"><strong>Tabung</strong></h1>
+        <a href="createTabung.html" class="btn btn-contact-bg">+ CREATE TABUNG</a>
+    </div>
+    <nav class="bottom-nav">
+        <div class="nav-item">
+            <a href="homepage.html" class="clickable-link">
+                <img src="img/homepage.png" alt="Profile Icon">
+                <span>Homepage</span>
+            </a>
+        </div>
+
+        <div class="nav-item">
+            <a href="transaction.html" class="clickable-link">
+                <img src="img/plus.png" alt="Plus Icon">
+                <span>Transactions</span>
+            </a>
+        </div>
+
+        <div class="nav-item">
+            <a href="tabung.html" class="clickable-link">
+                <img src="img/tabung.png" alt="Tabung Icon">
+                <span>Tabung</span>
+            </a>
+        </div>
+    </nav>
+
+    <div class="container" id="tabungContainer">
+        <!-- Tabung cards will be appended here -->
+    </div>
+
+   
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyC9b_7RCy6HhfE3e7OdCHexwr09_AaDKvc",
+          authDomain: "project-spendwise.firebaseapp.com",
+          databaseURL: "https://project-spendwise-default-rtdb.asia-southeast1.firebasedatabase.app",
+          projectId: "project-spendwise",
+          storageBucket: "project-spendwise.appspot.com",
+          messagingSenderId: "329577030606",
+          appId: "1:329577030606:web:6fff678c0890a23f77419f",
+          measurementId: "G-YJ9XYKL5TG"
+        };
+        
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        window.onload = () => {
+            const tabungRef = ref(db, 'tabung');
+
+            onValue(tabungRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    const tabungContainer = document.getElementById('tabungContainer');
+
+                    // Clear existing tabung cards
+                    tabungContainer.innerHTML = '';
+
+                    // Loop through each tabung and create card elements
+                    Object.keys(data).forEach((key) => {
+                        const tabung = data[key];
+
+                        // Create a new card element
+                        const card = document.createElement('div');
+                        card.className = 'col-xl-6 col-lg-6';
+                        card.innerHTML = `
+                            <div class="card l-bg-cherry">
+                                <div class="card-statistic-3 p-4">
+                                    <div class="card-icon card-icon-large"><i class="fas fa-piggy-bank"></i></div>
+                                    <div class="mb-4">
+                                        <h5 class="card-title mb-0">Saving</h5>
+                                    </div>
+                                    <div class="row align-items-center mb-2 d-flex">
+                                        <div class="col-8">
+                                            <h2 class="d-flex align-items-center mb-0">
+                                                ${tabung.tabungName}
+                                            </h2>
+                                        </div>
+                                        <div class="col-4 text-right">
+                                            <span>${tabung.date}</span>
+                                            <br>
+                                            <span>RM ${tabung.amount}</span>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6 text-left">
+                                            <button class="btn btn-warning btn-sm" onclick="editTabung('${key}')">Edit</button>
+                                        </div>
+                                        <div class="col-6 text-right">
+                                            <button class="btn btn-danger btn-sm" onclick="deleteTabung('${key}')">Delete</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+
+                        // Append the new card to the container
+                        tabungContainer.appendChild(card);
+                    });
+                }
+            }, (error) => {
+                console.error("Error fetching data from Firebase: ", error);
+            });
+        };
+
+        window.editTabung = (key) => {
+            // Your edit logic here, e.g., navigate to an edit page with the key as a query parameter
+            window.location.href = `editTabung.html?key=${key}`;
+        };
+
+        window.deleteTabung = (key) => {
+            if (confirm("Are you sure you want to delete this tabung?")) {
+                const tabungRef = ref(db, `tabung/${key}`);
+                remove(tabungRef)
+                    .then(() => {
+                        alert("Tabung deleted successfully.");
+                    })
+                    .catch((error) => {
+                        console.error("Error deleting tabung: ", error);
+                    });
+            }
+        };
+    </script>
+</body>
+</html>

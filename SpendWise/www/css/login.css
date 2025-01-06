@@ -1,0 +1,25 @@
+body{
+    background: url('../img/bg.jpg') no-repeat center center fixed;
+    background-size: cover;
+    display:flex;
+    justify-content: center;
+    align-items:center ;
+    height: 100vh;
+    }
+    .login-card {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.5);
+    }
+    .login-card img {
+    max-width: 250px; /* Adjust the max-width as needed */
+    max-height: 250px; /* Adjust the max-height as needed */
+    width: auto; /* Maintain aspect ratio */
+    height: auto; /* Maintain aspect ratio */
+    margin-bottom: 20px;
+    }
